@@ -14,9 +14,11 @@ class ViewController: UIViewController {
     
     var monthNames = ["January","February","March","April","May","June","July",
                       "August","September","October","November","December"]
+    var dateFormat = DateFormatter()
     var months = [31,28,31,30,31,30,31,31,30,31,30,31]
     var date: Date = Date()
     var firstDayOfMonth: Int = 0
+    var animationDuration: Double = 0.3
     
     let cellId = "Date"
     
@@ -25,6 +27,7 @@ class ViewController: UIViewController {
     var collectionViewFlowLayout: UICollectionViewFlowLayout!
     override func viewDidLoad() {
         super.viewDidLoad()
+        dateFormat.dateFormat = "MM YYYY"
         navigationItem.title = monthNames[date.month() - 1]
         firstDayOfMonth = date.startOfMonth()!
         setupView()
@@ -103,22 +106,29 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
             cell.isUserInteractionEnabled = false
         }
         cell.label.backgroundColor = .clear
+        cell.label.layer.backgroundColor = UIColor.clear.cgColor
         cell.label.layer.masksToBounds = true
         cell.label.layer.cornerRadius = cell.bounds.width / 2
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("Selected: \(indexPath.item)")
         let cell = collectionView.cellForItem(at: indexPath) as! CollectionViewCell
-        cell.label.backgroundColor = selectedColor
+        print(dateFormat.string(from: date) + " " + cell.label.text!)
+        UIView.animate(withDuration: animationDuration, animations: {
+            cell.label.layer.backgroundColor = self.selectedColor.cgColor
+        })
         cell.label.textColor = .white
     }
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! CollectionViewCell
-        cell.label.backgroundColor = .clear
-        cell.label.textColor = .black
+        UIView.transition(with: cell.label, duration: animationDuration, options: .transitionCrossDissolve, animations: {
+            cell.label.textColor = .black
+        }, completion: nil)
+        UIView.animate(withDuration: animationDuration, animations: {
+            cell.label.layer.backgroundColor = UIColor.clear.cgColor
+        })
     }
 }
 
