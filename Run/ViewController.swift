@@ -14,6 +14,8 @@ class ViewController: UIViewController {
     
     var monthNames = ["January","February","March","April","May","June","July",
                       "August","September","October","November","December"]
+    
+    var cells: [UICollectionViewCell] = []
     var dateFormat = DateFormatter()
     var months = [31,28,31,30,31,30,31,31,30,31,30,31]
     var date: Date = Date()
@@ -48,8 +50,8 @@ class ViewController: UIViewController {
     func setupCollectionViewItemSize() {
         if collectionViewFlowLayout == nil {
             let numberPerRow: CGFloat = 7
-            let lineSpacing: CGFloat = 5
-            let interItemSpacing: CGFloat = 5
+            let lineSpacing: CGFloat = 4
+            let interItemSpacing: CGFloat = 4
             
             let width = (collectionView.frame.width - (numberPerRow - 1) * interItemSpacing) / numberPerRow
             let height = width
@@ -109,7 +111,20 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
         cell.label.layer.backgroundColor = UIColor.clear.cgColor
         cell.label.layer.masksToBounds = true
         cell.label.layer.cornerRadius = cell.bounds.width / 2
+        
+        cells.append(cell)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        cell.alpha = 0
+        cell.layer.transform = CATransform3DMakeScale(0.5, 0.5, 0.5)
+        for _ in cells {
+            UIView.animate(withDuration: 1, delay: 0.01 * Double(indexPath.item), usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseOut, animations: {
+                cell.alpha = 1
+                cell.layer.transform = CATransform3DMakeScale(1, 1, 1)
+            }, completion: nil)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
